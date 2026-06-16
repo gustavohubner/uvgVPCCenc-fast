@@ -47,6 +47,7 @@
 #include "encoderFFmpeg.hpp"  // Include FFmepg
 #endif
 
+#include "utils/fileExport.hpp"
 #include "utils/parameters.hpp"
 #include "uvgutils/log.hpp"
 #include "utils/types.hpp"
@@ -110,6 +111,10 @@ void MapEncoding::initializeEncoderPointers() {
 
 void MapEncoding::encodeGOFMaps(const std::shared_ptr<uvgvpcc_enc::GOF>& gof) {
     uvgutils::Logger::log<uvgutils::LogLevel::TRACE>("MAP ENCODING", "Encode maps of GOF " + std::to_string(gof->gofId) + ".\n");
+
+    if (p_->occupancyGuidedKvazaarSkip) {
+        FileExport::exportOccupancyMapRawAllFrames(gof);
+    }
 
     occupancyMapDSEncoder->encodeGOFMaps(gof);
     geometryMapEncoder->encodeGOFMaps(gof);

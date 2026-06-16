@@ -147,6 +147,8 @@ void initializeParameterMap(Parameters& param) {
         {"sizeGOP2DEncoding", {UINT, "8,16", &param.sizeGOP2DEncoding}},
         {"intraFramePeriod", {UINT, "", &param.intraFramePeriod}},
         {"encoderInfoSEI", {BOOL, "", &param.encoderInfoSEI}},
+        {"occupancyGuidedKvazaarSkip", {BOOL, "", &param.occupancyGuidedKvazaarSkip}},
+        {"outputPath", {STRING, "", &param.outputPath}},
 
 // Occupancy map
 #if LINK_FFMPEG

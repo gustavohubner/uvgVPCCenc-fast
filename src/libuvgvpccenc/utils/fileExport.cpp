@@ -39,6 +39,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -580,6 +581,114 @@ void exportPointCloudPatchSegmentationBorderBlank(const std::shared_ptr<FrameCon
     }
 
     exportPointCloud(outputPath, frame->pointsGeometry, attributes);
+}
+
+void exportOccupancyMapRawAllFrames(const std::shared_ptr<uvgvpcc_enc::GOF>& gof) {
+    uvgutils::Logger::log<uvgutils::LogLevel::TRACE>(
+        "EXPORT FILE", "Export raw full-res occupancy map for all frames of GOF " + std::to_string(gof->gofId) + ".\n");
+
+    const uvgutils::Timer gen_timer;
+
+    std::string outputPath = p_->outputPath;
+    {
+        const auto dot = outputPath.rfind('.');
+        if (dot != std::string::npos) outputPath.resize(dot);
+        outputPath += "_OCCUPANCY_RAW_GOF" + std::to_string(gof->gofId) + ".bin";
+    }
+
+    createDirs(outputPath);
+
+    const uint32_t numGofFrames = static_cast<uint32_t>(gof->frames.size());
+    const uint32_t occEntriesPerGofFrame = p_->doubleLayer ? 2U : 1U;
+    const uint32_t frameCount = numGofFrames * occEntriesPerGofFrame;
+    const uint32_t mapWidth = static_cast<uint32_t>(p_->mapWidth);
+    const uint32_t blocksWide = (mapWidth + 7) / 8;
+
+    std::vector<uint8_t> occBuffer;
+    {
+        uint32_t totalBlocks = 0;
+        for (const auto& frame : gof->frames) {
+            const uint32_t mapHeight = static_cast<uint32_t>(frame->mapHeight);
+            const uint32_t blocksHigh = (mapHeight + 7) / 8;
+            totalBlocks += blocksHigh * blocksWide * occEntriesPerGofFrame;
+        }
+        totalBlocks += 2 + frameCount;
+        occBuffer.reserve(totalBlocks);
+
+        occBuffer.insert(occBuffer.end(), reinterpret_cast<const uint8_t*>(&frameCount),
+                         reinterpret_cast<const uint8_t*>(&frameCount) + sizeof(frameCount));
+        occBuffer.insert(occBuffer.end(), reinterpret_cast<const uint8_t*>(&blocksWide),
+                         reinterpret_cast<const uint8_t*>(&blocksWide) + sizeof(blocksWide));
+
+        for (const auto& frame : gof->frames) {
+            const uint32_t mapHeight = static_cast<uint32_t>(frame->mapHeight);
+            const uint32_t blocksHigh = (mapHeight + 7) / 8;
+
+            const uint8_t* data = frame->occupancyMap->data();
+
+            auto writeOccupancyEntry = [&]() {
+                occBuffer.insert(occBuffer.end(), reinterpret_cast<const uint8_t*>(&blocksHigh),
+                                 reinterpret_cast<const uint8_t*>(&blocksHigh) + sizeof(blocksHigh));
+                for (uint32_t by = 0; by < blocksHigh; by++) {
+                    const uint32_t rowStart = by * 8;
+                    const uint32_t rowEnd = (std::min)(rowStart + 8, mapHeight);
+
+                    for (uint32_t bx = 0; bx < blocksWide; bx++) {
+                        const uint32_t colStart = bx * 8;
+                        const uint32_t colEnd = (std::min)(colStart + 8, mapWidth);
+
+                        uint64_t orAccum = 0;
+
+                        for (uint32_t r = rowStart; r < rowEnd; r++) {
+                            const uint8_t* rowPtr = data + r * mapWidth + colStart;
+                            uint32_t c = colStart;
+                            while (c + 8 <= colEnd) {
+                                uint64_t chunk;
+                                memcpy(&chunk, rowPtr + (c - colStart), sizeof(chunk));
+                                orAccum |= chunk;
+                                c += 8;
+                            }
+                            while (c < colEnd) {
+                                orAccum |= rowPtr[c - colStart];
+                                c++;
+                            }
+                        }
+
+                        const uint8_t occBit = (orAccum != 0) ? 1 : 0;
+                        occBuffer.push_back(occBit);
+                    }
+                }
+            };
+
+            for (uint32_t occIdx = 0; occIdx < occEntriesPerGofFrame; occIdx++) {
+                writeOccupancyEntry();
+            }
+        }
+    }
+
+    const double genMs = gen_timer.elapsed();
+    uvgutils::Logger::log<uvgutils::LogLevel::INFO>("EXPORT FILE",
+        "Occupancy 8x8-block accumulate for GOF " + std::to_string(gof->gofId) +
+        " took " + std::to_string(genMs) + " ms.\n");
+
+    const uvgutils::Timer io_timer;
+
+    std::ofstream file(outputPath, std::ios::binary);
+    if (!file.is_open()) {
+        throw std::runtime_error("Unable to open file: " + outputPath);
+    }
+
+    file.write(reinterpret_cast<const char*>(occBuffer.data()), occBuffer.size());
+    if (!file) {
+        throw std::runtime_error("Error while writing to file: " + outputPath);
+    }
+
+    file.close();
+
+    const double ioMs = io_timer.elapsed();
+    uvgutils::Logger::log<uvgutils::LogLevel::INFO>("EXPORT FILE",
+        "Occupancy 8x8-block file write for GOF " + std::to_string(gof->gofId) +
+        " took " + std::to_string(ioMs) + " ms (total " + std::to_string(genMs + ioMs) + " ms).\n");
 }
 
 void exportImageOccupancy(const std::shared_ptr<FrameContext>& frame) {

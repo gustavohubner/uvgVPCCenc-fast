@@ -8,7 +8,10 @@ set(uvgVPCCenc_VER 1.2.0)
 set(uvgVPCCenc_DESCR "uvgVPCCenc is an open-source real-time V-PCC encoder library written in C++ from scratch.")
 set(uvgVPCCenc_URL "https://github.com/ultravideo/uvgVPCCenc")
 
-set(KVAZAAR_REPO_URL "https://github.com/ultravideo/kvazaar.git")
+# set(KVAZAAR_REPO_URL "https://github.com/ultravideo/kvazaar.git")
+
+# kvazaar with occupancy skip support.
+set(KVAZAAR_REPO_URL "https://github.com/gustavohubner/kvazaar-occupSkip.git")
 set(KVAZAAR_REPO_TAGS "32fb3462eb97fdf07aeb41fbf0b311678419d659")
 
 # Third-party header-only / lightweight dependencies
