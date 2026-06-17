@@ -9,10 +9,11 @@ set(uvgVPCCenc_DESCR "uvgVPCCenc is an open-source real-time V-PCC encoder libra
 set(uvgVPCCenc_URL "https://github.com/ultravideo/uvgVPCCenc")
 
 # set(KVAZAAR_REPO_URL "https://github.com/ultravideo/kvazaar.git")
+# set(KVAZAAR_REPO_TAGS "32fb3462eb97fdf07aeb41fbf0b311678419d659")
 
 # kvazaar with occupancy skip support.
 set(KVAZAAR_REPO_URL "https://github.com/gustavohubner/kvazaar-occupSkip.git")
-set(KVAZAAR_REPO_TAGS "32fb3462eb97fdf07aeb41fbf0b311678419d659")
+set(KVAZAAR_REPO_TAGS "b41dc91c6f41c35d56499668515fd82cdb8e8090")
 
 # Third-party header-only / lightweight dependencies
 # miniply has no versioned tags; pin to a specific commit for reproducibility.
