@@ -13,7 +13,9 @@ set(uvgVPCCenc_URL "https://github.com/ultravideo/uvgVPCCenc")
 
 # kvazaar with occupancy skip support.
 set(KVAZAAR_REPO_URL "https://github.com/gustavohubner/kvazaar-occupSkip.git")
-set(KVAZAAR_REPO_TAGS "b41dc91c6f41c35d56499668515fd82cdb8e8090")
+# set(KVAZAAR_REPO_TAGS "b41dc91c6f41c35d56499668515fd82cdb8e8090")
+set(KVAZAAR_REPO_TAGS "56403ad394fb9e3c86b3e617574cb0597eab4e20")
+#56403ad394fb9e3c86b3e617574cb0597eab4e20
 
 # Third-party header-only / lightweight dependencies
 # miniply has no versioned tags; pin to a specific commit for reproducibility.

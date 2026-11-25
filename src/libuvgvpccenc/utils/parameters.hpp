@@ -150,6 +150,11 @@ struct Parameters {
                                    // uvgVPCCenc, the value is indirectly set by 8 or 16, depending on the size of the 2D encoding GOP)
     bool encoderInfoSEI = false;
     bool occupancyGuidedKvazaarSkip = true;
+    // Passed to kvazaar as --unoccup-depth / --occupancy-skip. Both only take
+    // effect when occupancyGuidedKvazaarSkip is true and the map being
+    // encoded is geometry or attribute (the occupancy map never gets them).
+    int unoccupDepth = -1;       // -1 = off; 0..3 = target depth of empty CUs
+    bool occupancySkip = false;  // true = --occupancy-skip 1 (merge-skip)
     std::string outputPath;
 
     // Occupancy map

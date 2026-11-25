@@ -358,6 +358,12 @@ void EncoderKvazaar::encodeGOFMaps(const std::shared_ptr<uvgvpcc_enc::GOF>& gof)
             occPath += "_OCCUPANCY_RAW_GOF" + std::to_string(gof->gofId) + ".bin";
         }
         api->config_parse(config, "occupancy", occPath.c_str());
+        if (p_->unoccupDepth >= 0) {
+            api->config_parse(config, "unoccup-depth", std::to_string(p_->unoccupDepth).c_str());
+        }
+        if (p_->occupancySkip) {
+            api->config_parse(config, "occupancy-skip", "1");
+        }
     }
 
     std::vector<std::reference_wrapper<std::vector<uint8_t>>> mapList;

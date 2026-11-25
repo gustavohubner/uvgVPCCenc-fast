@@ -148,6 +148,8 @@ void initializeParameterMap(Parameters& param) {
         {"intraFramePeriod", {UINT, "", &param.intraFramePeriod}},
         {"encoderInfoSEI", {BOOL, "", &param.encoderInfoSEI}},
         {"occupancyGuidedKvazaarSkip", {BOOL, "", &param.occupancyGuidedKvazaarSkip}},
+        {"unoccupDepth", {INT, "-1,0,1,2,3", &param.unoccupDepth}},
+        {"occupancySkip", {BOOL, "", &param.occupancySkip}},
         {"outputPath", {STRING, "", &param.outputPath}},
 
 // Occupancy map
