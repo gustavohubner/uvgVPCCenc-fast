@@ -5,6 +5,14 @@ if(NOT DEFINED patch_file)
     message(FATAL_ERROR "patch_file is required to apply multilib patch")
 endif()
 
+# If export_rename.h already exists, the multilib changes are already present
+# in the kvazaar source (e.g. gustavohubner/kvazaar-occupSkip fork has them
+# baked in). Skip patching entirely.
+if(EXISTS "${source_dir}/src/export_rename.h")
+    message(STATUS "multilib.patch already applied (export_rename.h exists); skipping")
+    return()
+endif()
+
 if(NOT EXISTS "${patch_file}")
     message(FATAL_ERROR "multilib.patch not found at ${patch_file}")
 endif()

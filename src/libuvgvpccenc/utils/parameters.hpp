@@ -156,6 +156,10 @@ struct Parameters {
     int unoccupDepth = -1;       // -1 = off; 0..3 = target depth of empty CUs
     bool occupancySkip = false;  // true = --occupancy-skip 1 (merge-skip)
     std::string outputPath;
+    // Raw occupancy .bin exported for kvazaar. Empty keeps the legacy name
+    // (<outputPath>_OCCUPANCY_RAW_GOF<N>.bin in the CWD); "%g" is replaced by
+    // the GOF id, so parallel runs can write to distinct files.
+    std::string occupancyRawPath;
 
     // Occupancy map
     std::string occupancyEncoderName = "Kvazaar";

@@ -80,6 +80,7 @@ void exportPointCloudPatchSegmentationBorder(const std::shared_ptr<FrameContext>
 void exportPointCloudPatchSegmentationBorderBlank(const std::shared_ptr<FrameContext>& frame);
 
 // Map generation
+std::string getOccupancyRawPath(size_t gofId);
 void exportOccupancyMapRawAllFrames(const std::shared_ptr<uvgvpcc_enc::GOF>& gof);
 void exportImageOccupancy(const std::shared_ptr<FrameContext>& frame);
 void exportImageOccupancyDS(const std::shared_ptr<FrameContext>& frame);

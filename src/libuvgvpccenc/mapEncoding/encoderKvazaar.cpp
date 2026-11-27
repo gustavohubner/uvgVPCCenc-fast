@@ -351,12 +351,7 @@ void EncoderKvazaar::encodeGOFMaps(const std::shared_ptr<uvgvpcc_enc::GOF>& gof)
     setKvazaarConfig(api, config, width, height, encoderType_);
 
     if (p_->occupancyGuidedKvazaarSkip && (encoderType_ == GEOMETRY || encoderType_ == ATTRIBUTE)) {
-        std::string occPath = p_->outputPath;
-        {
-            const auto dot = occPath.rfind('.');
-            if (dot != std::string::npos) occPath.resize(dot);
-            occPath += "_OCCUPANCY_RAW_GOF" + std::to_string(gof->gofId) + ".bin";
-        }
+        const std::string occPath = FileExport::getOccupancyRawPath(gof->gofId);
         api->config_parse(config, "occupancy", occPath.c_str());
         if (p_->unoccupDepth >= 0) {
             api->config_parse(config, "unoccup-depth", std::to_string(p_->unoccupDepth).c_str());

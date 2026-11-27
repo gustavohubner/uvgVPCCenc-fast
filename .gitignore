@@ -3,3 +3,5 @@ _*
 docs
 sdp
 .clangd-trace
+*.md
+26*

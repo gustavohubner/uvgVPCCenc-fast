@@ -151,6 +151,7 @@ void initializeParameterMap(Parameters& param) {
         {"unoccupDepth", {INT, "-1,0,1,2,3", &param.unoccupDepth}},
         {"occupancySkip", {BOOL, "", &param.occupancySkip}},
         {"outputPath", {STRING, "", &param.outputPath}},
+        {"occupancyRawPath", {STRING, "", &param.occupancyRawPath}},
 
 // Occupancy map
 #if LINK_FFMPEG

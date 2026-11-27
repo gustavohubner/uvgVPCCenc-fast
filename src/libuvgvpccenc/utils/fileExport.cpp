@@ -583,18 +583,31 @@ void exportPointCloudPatchSegmentationBorderBlank(const std::shared_ptr<FrameCon
     exportPointCloud(outputPath, frame->pointsGeometry, attributes);
 }
 
+std::string getOccupancyRawPath(const size_t gofId) {
+    if (!p_->occupancyRawPath.empty()) {
+        std::string path = p_->occupancyRawPath;
+        const std::string placeholder = "%g";
+        const std::string id = std::to_string(gofId);
+        for (size_t pos = path.find(placeholder); pos != std::string::npos;
+             pos = path.find(placeholder, pos + id.size())) {
+            path.replace(pos, placeholder.size(), id);
+        }
+        return path;
+    }
+
+    std::string path = p_->outputPath;
+    const auto dot = path.rfind('.');
+    if (dot != std::string::npos) path.resize(dot);
+    return path + "_OCCUPANCY_RAW_GOF" + std::to_string(gofId) + ".bin";
+}
+
 void exportOccupancyMapRawAllFrames(const std::shared_ptr<uvgvpcc_enc::GOF>& gof) {
     uvgutils::Logger::log<uvgutils::LogLevel::TRACE>(
         "EXPORT FILE", "Export raw full-res occupancy map for all frames of GOF " + std::to_string(gof->gofId) + ".\n");
 
     const uvgutils::Timer gen_timer;
 
-    std::string outputPath = p_->outputPath;
-    {
-        const auto dot = outputPath.rfind('.');
-        if (dot != std::string::npos) outputPath.resize(dot);
-        outputPath += "_OCCUPANCY_RAW_GOF" + std::to_string(gof->gofId) + ".bin";
-    }
+    const std::string outputPath = getOccupancyRawPath(gof->gofId);
 
     createDirs(outputPath);
 
